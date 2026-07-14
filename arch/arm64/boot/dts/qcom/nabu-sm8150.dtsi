@@ -151,11 +151,12 @@ And public attribution of xiaomi platforms(like J20S and so and)
 };
 
 &ext_5v_boost {
-	status = "disable";
+	status = "enabled";
 };
 
 &pm8150b_pdphy {
 	mi,non-qcom-pps-ctrl;
+	vbus-supply = <&ext_5v_boost>;
 };
 
 &qupv3_se4_i2c {
