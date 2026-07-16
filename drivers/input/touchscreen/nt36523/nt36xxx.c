@@ -112,7 +112,7 @@ const uint16_t gesture_key_array[] = {
 	KEY_POWER,  //GESTURE_WORD_C
 	KEY_POWER,  //GESTURE_WORD_W
 	KEY_POWER,  //GESTURE_WORD_V
-	KEY_WAKEUP,  //GESTURE_DOUBLE_CLICK
+	KEY_POWER,  //GESTURE_DOUBLE_CLICK
 	KEY_POWER,  //GESTURE_WORD_Z
 	KEY_POWER,  //GESTURE_WORD_M
 	KEY_POWER,  //GESTURE_WORD_O
@@ -1968,6 +1968,7 @@ out:
 	return ret;
 }
 
+void nvt_enable_doubleclick(void);
 static void nvt_switch_mode_work(struct work_struct *work)
 {
 	NVT_LOG("%s double click wakeup", ts->db_wakeup ? "ENABLE" : "DISABLE");
