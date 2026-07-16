@@ -1973,7 +1973,8 @@ static void nvt_switch_mode_work(struct work_struct *work)
 	NVT_LOG("%s double click wakeup", ts->db_wakeup ? "ENABLE" : "DISABLE");
 	if (ts->ic_state <= NVT_IC_SUSPEND_OUT && ts->ic_state != NVT_IC_INIT ) {
 		ts->gesture_command_delayed = ts->db_wakeup;
-		NVT_ERR("Panel off, don't set dbclick gesture flag util panel on");
+		if (ts->db_wakeup)
+			nvt_enable_doubleclick();
 		ts->db_wakeup = 0;
 	} else  if (ts->ic_state >= NVT_IC_RESUME_IN){
 		dsi_panel_doubleclick_enable(!!ts->db_wakeup);
