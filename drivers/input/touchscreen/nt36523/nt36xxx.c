@@ -179,10 +179,36 @@ static DEVICE_ATTR(panel_color, (S_IRUGO), nvt_panel_color_show, NULL);
 static DEVICE_ATTR(panel_vendor, (S_IRUGO), nvt_panel_vendor_show, NULL);
 static DEVICE_ATTR(panel_display, (S_IRUGO), nvt_panel_display_show, NULL);
 
+static ssize_t nvt_double_tap_wake_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", ts->db_wakeup ? 1 : 0);
+}
+
+static ssize_t nvt_double_tap_wake_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned long val;
+
+	if (kstrtoul(buf, 0, &val))
+		return -EINVAL;
+
+	if (!ts)
+		return -ENODEV;
+
+	ts->db_wakeup = val ? (ts->db_wakeup | 0x01) : (ts->db_wakeup & 0xFE);
+	ts->db_wakeup = val ? (ts->db_wakeup | 0x02) : (ts->db_wakeup & 0xFD);
+	schedule_work(&ts->switch_mode_work);
+
+	return count;
+}
+static DEVICE_ATTR_RW(double_tap_wake);
+
 struct attribute *nvt_panel_attr[] = {
 	&dev_attr_panel_color.attr,
 	&dev_attr_panel_vendor.attr,
 	&dev_attr_panel_display.attr,
+	&dev_attr_double_tap_wake.attr,
 	NULL,
 };
 
