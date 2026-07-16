@@ -179,13 +179,13 @@ static DEVICE_ATTR(panel_color, (S_IRUGO), nvt_panel_color_show, NULL);
 static DEVICE_ATTR(panel_vendor, (S_IRUGO), nvt_panel_vendor_show, NULL);
 static DEVICE_ATTR(panel_display, (S_IRUGO), nvt_panel_display_show, NULL);
 
-static ssize_t nvt_double_tap_wake_show(struct device *dev,
+static ssize_t double_tap_wake_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	return snprintf(buf, PAGE_SIZE, "%d\n", ts->db_wakeup ? 1 : 0);
 }
 
-static ssize_t nvt_double_tap_wake_store(struct device *dev,
+static ssize_t double_tap_wake_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
 	unsigned long val;
