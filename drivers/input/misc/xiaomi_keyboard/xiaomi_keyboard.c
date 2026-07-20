@@ -90,16 +90,25 @@ DEVICE_ATTR(xiaomi_keyboard_conn_status, (S_IRUGO | S_IWUSR | S_IWGRP), xiaomi_k
 static irqreturn_t xiaomi_keyboard_irq_func(int irq, void *data)
 {
 	int value = 0;
-	MI_KB_INFO("keyboard event: wakeup system\n");
 	pm_wakeup_event(&mdata->pdev->dev, 500);
+
+	/* Debounce: wait for GPIO line to stabilize after MCU power-up */
+	msleep(20);
+
 	value = gpio_get_value_cansleep(mdata->pdata->in_irq_gpio);
 
+	/*
+	 * Use actual GPIO level instead of XOR toggle.
+	 * GPIO high (1) = MCU active = keyboard connected.
+	 * GPIO low (0)  = MCU inactive = keyboard disconnected.
+	 */
 	mutex_lock(&mdata->rw_mutex);
-	mdata->keyboard_conn_status = !mdata->keyboard_conn_status;
+	mdata->keyboard_conn_status = value;
 	mutex_unlock(&mdata->rw_mutex);
 
 	xiaomi_keyboard_connected_notify(&mdata->pdev->dev);
-	MI_KB_INFO("keyboard connected status: %d", mdata->keyboard_conn_status);
+	MI_KB_INFO("keyboard connected status: %d (gpio=%d)\n",
+		   mdata->keyboard_conn_status, value);
 	return IRQ_HANDLED;
 }
 
