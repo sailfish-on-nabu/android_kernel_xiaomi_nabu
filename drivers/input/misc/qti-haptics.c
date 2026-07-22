@@ -883,7 +883,22 @@ static int qti_haptics_upload_effect(struct input_dev *dev,
 	}
 
 	switch (effect->type) {
-	case FF_CONSTANT:
+	case FF_RUMBLE:
+                play->length_us = effect->replay.length * USEC_PER_MSEC;
+                level = effect->u.rumble.strong_magnitude;
+                tmp = level * config->vmax_mv;
+                play->vmax_mv = tmp / 0x7fff;
+                dev_dbg(chip->dev, "upload rumble effect, length = %dus, vmax_mv=%d\n",
+                                play->length_us, play->vmax_mv);
+ 
+                rc = qti_haptics_load_constant_waveform(chip);
+                if (rc < 0) {
+                        dev_err(chip->dev, "Play rumble waveform failed, rc=%d\n",
+                                        rc);
+                        return rc;
+                }
+                break;
+ 	case FF_CONSTANT:
 		play->length_us = effect->replay.length * USEC_PER_MSEC;
 		level = effect->u.constant.level;
 		tmp = level * config->vmax_mv;
@@ -1990,6 +2005,7 @@ static int qti_haptics_probe(struct platform_device *pdev)
 	chip->input_dev = input_dev;
 
 	input_set_capability(input_dev, EV_FF, FF_CONSTANT);
+	input_set_capability(input_dev, EV_FF, FF_RUMBLE);
 	input_set_capability(input_dev, EV_FF, FF_GAIN);
 	if (chip->effects_count != 0) {
 		input_set_capability(input_dev, EV_FF, FF_PERIODIC);
