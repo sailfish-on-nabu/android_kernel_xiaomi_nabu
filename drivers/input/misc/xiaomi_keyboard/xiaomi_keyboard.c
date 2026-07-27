@@ -419,25 +419,27 @@ static void set_keyboard_status(bool on) {
 	}
 
 	if (on && !(mdata->keyboard_is_enable)) {
-		ret = xiaomi_keyboard_power_on();
-		if (ret) {
-			MI_KB_ERR("Init 3.3V power failed\n");
-			return;
-		}
-		msleep(1);
-		ret = xiaomi_keyboard_setup_gpio(mdata->pdata);
-		if (ret) {
-			MI_KB_ERR("setup gpio failed\n");
-			return;
-		}
-		msleep(2);
-
 		if (!mdata->is_in_suspend) {
 			ret = pinctrl_select_state(mdata->pinctrl, mdata->pins_active);
 			if (ret < 0) {
 				MI_KB_ERR("Set active pin state error:%d\n", ret);
 			}
 		}
+
+		ret = xiaomi_keyboard_power_on();
+		if (ret) {
+			MI_KB_ERR("Init 3.3V power failed\n");
+			return;
+		}
+		msleep(20);
+		xiaomi_keyboard_reset();
+		msleep(50);
+		ret = xiaomi_keyboard_setup_gpio(mdata->pdata);
+		if (ret) {
+			MI_KB_ERR("setup gpio failed\n");
+			return;
+		}
+		msleep(2);
 		mdata->keyboard_is_enable = true;
 
 	} else if (!on && mdata->keyboard_is_enable) {
