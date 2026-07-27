@@ -2510,6 +2510,8 @@ int usb_new_device(struct usb_device *udev)
 	 * for configuring the device and invoking the add-device
 	 * notifier chain (used by usbfs and possibly others).
 	 */
+	if (le16_to_cpu(udev->descriptor.idVendor) == 0x3206)
+		udev->dev.kobj.uevent_suppress = 1;
 	err = device_add(&udev->dev);
 	if (err) {
 		dev_err(&udev->dev, "can't device_add, error %d\n", err);

@@ -1952,6 +1952,8 @@ free_interfaces:
 			dev_name(&intf->dev), configuration,
 			intf->cur_altsetting->desc.bInterfaceNumber);
 		device_enable_async_suspend(&intf->dev);
+		if (le16_to_cpu(dev->descriptor.idVendor) == 0x3206)
+			intf->dev.kobj.uevent_suppress = 1;
 		ret = device_add(&intf->dev);
 		if (ret != 0) {
 			dev_err(&dev->dev, "device_add(%s) --> %d\n",
