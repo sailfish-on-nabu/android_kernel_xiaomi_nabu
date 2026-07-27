@@ -110,13 +110,6 @@ static irqreturn_t xiaomi_keyboard_irq_func(int irq, void *data)
 	if (value && !mdata->keyboard_is_enable)
 		set_keyboard_status(1);
 
-	/* Hotplug reconnect: MCU lost power, re-initialize with reset */
-	if (value && mdata->keyboard_is_enable) {
-		MI_KB_INFO("keyboard hotplug reconnected, resetting MCU\n");
-		xiaomi_keyboard_reset();
-		msleep(100);
-	}
-
 	xiaomi_keyboard_connected_notify(&mdata->pdev->dev);
 	MI_KB_INFO("keyboard connected status: %d (gpio=%d)\n",
 		   mdata->keyboard_conn_status, value);
