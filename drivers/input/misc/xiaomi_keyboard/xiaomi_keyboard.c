@@ -106,6 +106,10 @@ static irqreturn_t xiaomi_keyboard_irq_func(int irq, void *data)
 	mdata->keyboard_conn_status = value;
 	mutex_unlock(&mdata->rw_mutex);
 
+	/* Auto-enable keyboard when connection is detected */
+	if (value && !mdata->keyboard_is_enable)
+		set_keyboard_status(1);
+
 	xiaomi_keyboard_connected_notify(&mdata->pdev->dev);
 	MI_KB_INFO("keyboard connected status: %d (gpio=%d)\n",
 		   mdata->keyboard_conn_status, value);
@@ -540,6 +544,8 @@ static int xiaomi_keyboard_probe(struct platform_device *pdev)
 		goto err_register_power_supply_notif_failed;
 	}
 
+	/* Auto-enable keyboard on probe for Sailfish OS */
+	set_keyboard_status(1);
 	MI_KB_INFO("Success\n");
 	return ret;
 
