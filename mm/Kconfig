@@ -556,6 +556,23 @@ config CMA_AREAS
 
 	  If unsure, leave the default value "7".
 
+config CMA_ALIGNMENT
+	int "Maximum PAGE_SIZE order of alignment for contiguous buffers"
+	range 4 12
+	default 8
+	help
+	  DMA mapping framework by default aligns all buffers to the smallest
+	  PAGE_SIZE order which is greater than or equal to the requested buffer
+	  size. This works well for buffers up to a few hundreds kilobytes, but
+	  for larger buffers it just a memory waste. With this parameter you can
+	  specify the maximum PAGE_SIZE order alignment for DMA buffers. Larger
+	  buffers will be aligned only to this order.
+
+	  The cost of higher alignment is higher memory usage and wasted space
+	  for smaller buffers.
+
+	  If unsure, leave the default value "8".
+
 config MEM_SOFT_DIRTY
 	bool "Track memory changes"
 	depends on CHECKPOINT_RESTORE && HAVE_ARCH_SOFT_DIRTY && PROC_FS

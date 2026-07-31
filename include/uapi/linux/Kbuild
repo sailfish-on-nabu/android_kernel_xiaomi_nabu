@@ -4,6 +4,7 @@ ifeq ($(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/a.out.h),)
 no-export-headers += a.out.h
 endif
 
+header-y += dma-heap.h
 header-y += hbtp_input.h
 header-y += qbt1000.h
 
