@@ -546,8 +546,17 @@ static int xiaomi_keyboard_probe(struct platform_device *pdev)
 		goto err_register_power_supply_notif_failed;
 	}
 
-	/* Auto-enable keyboard on probe for Sailfish OS */
-	set_keyboard_status(1);
+	/* Auto-enable keyboard on probe for Sailfish OS, only if the
+	 * keyboard cover is detected as present (MCU active / GPIO high).
+	 * Avoids powering the connector at boot when no cover is attached,
+	 * which would otherwise make the USB touchpad enumerate and cause
+	 * a stray mouse cursor on the desktop.
+	 */
+	if (gpio_get_value_cansleep(mdata->pdata->in_irq_gpio)) {
+		set_keyboard_status(1);
+	} else {
+		MI_KB_INFO("keyboard not detected, skip auto-enable\n");
+	}
 	MI_KB_INFO("Success\n");
 	return ret;
 
